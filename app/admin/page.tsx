@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { DatabaseOverviewCards } from '@/components/admin/DatabaseOverviewCards';
@@ -46,7 +46,7 @@ export default function AdminPage() {
       setErrorMsg('');
       loadAdminData();
     } else {
-      setErrorMsg('Passcode admin salah. Gunakan: admin');
+      setErrorMsg('Passcode akses tidak valid.');
     }
   };
 
@@ -80,18 +80,18 @@ export default function AdminPage() {
                 <Shield className="h-7 w-7" />
               </div>
               <h2 className="text-xl font-black text-slate-900 dark:text-slate-100">
-                Masuk Mode Admin Database
+                Akses Terbatas
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Masukkan passcode admin untuk membuka panel kontrol penuh
+                Masukkan passcode otorisasi untuk membuka panel kontrol admin database
               </p>
             </div>
 
             <form onSubmit={handleUnlockAdmin} className="space-y-4">
               <GlassInput
                 type="password"
-                label="Passcode Admin"
-                placeholder="Passcode default: admin"
+                label="Passcode Otorisasi"
+                placeholder="Masukkan kode akses..."
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 icon={<Lock className="h-4 w-4" />}
@@ -100,14 +100,10 @@ export default function AdminPage() {
               />
 
               <GlassButton type="submit" variant="primary" className="w-full">
-                <span>Buka Panel Admin</span>
+                <span>Verifikasi Kunci Panel</span>
                 <ArrowRight className="h-4 w-4 ml-1.5" />
               </GlassButton>
             </form>
-
-            <div className="p-3 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-center text-xs text-slate-600 dark:text-slate-300">
-              <p>💡 Tip: Anda juga dapat login langsung dengan username <strong>admin</strong> di halaman Login.</p>
-            </div>
           </GlassCard>
         </div>
       </AppLayout>
@@ -118,7 +114,7 @@ export default function AdminPage() {
     <AppLayout>
       <PageHeader
         title="Admin Database & PWA Console"
-        subtitle="Manajemen database terpusat, user impersonation, query inspector & konfigurasi PWA/APK"
+        subtitle="Manajemen database terpusat, query inspector & konfigurasi PWA/APK"
       />
 
       <div className="space-y-6">
