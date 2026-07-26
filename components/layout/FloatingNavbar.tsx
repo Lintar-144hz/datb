@@ -11,6 +11,7 @@ import {
   BarChart3,
   History,
   Settings,
+  Shield,
   Plus,
   Wallet,
 } from 'lucide-react';
@@ -24,6 +25,7 @@ const navItems = [
   { name: 'Target', href: '/target', icon: Target },
   { name: 'Statistik', href: '/statistik', icon: BarChart3 },
   { name: 'Riwayat', href: '/riwayat', icon: History },
+  { name: 'Admin DB', href: '/admin', icon: Shield },
   { name: 'Pengaturan', href: '/pengaturan', icon: Settings },
 ];
 
@@ -41,19 +43,19 @@ export function FloatingNavbar() {
     <>
       {/* Desktop Top Floating Navbar */}
       <header className="fixed top-4 inset-x-0 z-40 hidden md:flex justify-center px-4 pointer-events-none">
-        <div className="floating-nav-glass pointer-events-auto flex items-center justify-between gap-6 rounded-full px-6 py-3 max-w-5xl w-full">
+        <div className="floating-nav-glass pointer-events-auto flex items-center justify-between gap-4 rounded-full px-5 py-2.5 max-w-6xl w-full">
           {/* Logo Brand */}
-          <Link href="/dashboard" className="flex items-center gap-2.5 group">
+          <Link href="/dashboard" className="flex items-center gap-2 group shrink-0">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 text-white shadow-md shadow-purple-500/30 group-hover:scale-105 transition-transform">
               <Wallet className="h-5 w-5" />
             </div>
-            <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-300 bg-clip-text text-transparent">
+            <span className="font-extrabold text-sm sm:text-base tracking-tight bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-300 bg-clip-text text-transparent">
               Tabungan Dev
             </span>
           </Link>
 
           {/* Navigation Links */}
-          <nav className="flex items-center gap-1">
+          <nav className="flex items-center gap-1 overflow-x-auto">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -63,7 +65,7 @@ export function FloatingNavbar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'relative px-3.5 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 flex items-center gap-1.5',
+                    'relative px-3 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 flex items-center gap-1.5 shrink-0',
                     isActive
                       ? 'text-purple-600 dark:text-purple-300'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-200/40 dark:hover:bg-slate-800/40'
@@ -76,7 +78,7 @@ export function FloatingNavbar() {
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
                   )}
-                  <Icon className="h-4 w-4 relative z-10" />
+                  <Icon className="h-3.5 w-3.5 relative z-10" />
                   <span className="relative z-10">{item.name}</span>
                 </Link>
               );
@@ -84,21 +86,21 @@ export function FloatingNavbar() {
           </nav>
 
           {/* Quick Add Action Button */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => openAddTransactionModal()}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-full shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 active:scale-95 transition-all"
+              className="flex items-center gap-1 px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-full shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 active:scale-95 transition-all"
             >
               <Plus className="h-4 w-4 stroke-[3]" />
-              <span>Transaksi Baru</span>
+              <span>Tambah</span>
             </button>
           </div>
         </div>
       </header>
 
       {/* Mobile Bottom Floating Liquid Glass Bar */}
-      <nav className="fixed bottom-4 inset-x-4 z-40 md:hidden pointer-events-none">
-        <div className="floating-nav-glass pointer-events-auto flex items-center justify-around rounded-3xl p-2 max-w-md mx-auto shadow-2xl border border-white/40 dark:border-white/10">
+      <nav className="fixed bottom-3 inset-x-3 z-40 md:hidden pointer-events-none">
+        <div className="floating-nav-glass pointer-events-auto flex items-center justify-around rounded-3xl p-1.5 max-w-md mx-auto shadow-2xl border border-white/40 dark:border-white/10">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -108,7 +110,7 @@ export function FloatingNavbar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'relative flex flex-col items-center justify-center py-2 px-3 rounded-2xl transition-all duration-200',
+                  'relative flex flex-col items-center justify-center py-1.5 px-2 rounded-2xl transition-all duration-200',
                   isActive
                     ? 'text-purple-600 dark:text-purple-300 font-bold'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -121,8 +123,8 @@ export function FloatingNavbar() {
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
-                <Icon className="h-5 w-5 relative z-10" />
-                <span className="text-[10px] mt-1 relative z-10">{item.name}</span>
+                <Icon className="h-4 w-4 relative z-10" />
+                <span className="text-[9px] mt-0.5 relative z-10">{item.name}</span>
               </Link>
             );
           })}
