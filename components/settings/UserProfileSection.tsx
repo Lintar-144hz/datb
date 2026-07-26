@@ -5,7 +5,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { GlassInput } from '@/components/ui/GlassInput';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { useAuth } from '@/hooks/useAuth';
-import { User, Edit3, LogOut, Check } from 'lucide-react';
+import { User, Edit3, LogOut, Check, Shield, UserCheck } from 'lucide-react';
 
 export function UserProfileSection() {
   const { user, updateUsername, logout } = useAuth();
@@ -13,6 +13,8 @@ export function UserProfileSection() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  const isAdmin = user?.username?.toLowerCase() === 'admin';
 
   const handleSave = async () => {
     if (!newUsername.trim()) return;
@@ -38,10 +40,10 @@ export function UserProfileSection() {
         </div>
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
-            Profil Pengguna Dev
+            Profil Pengguna
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Username disimpan secara aman di LocalStorage & Supabase
+            Username disimpan secara aman di LocalStorage & Supabase Realtime
           </p>
         </div>
       </div>
@@ -75,12 +77,25 @@ export function UserProfileSection() {
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <p className="text-xs text-slate-500 dark:text-slate-400">Username Aktif</p>
-              <p className="text-lg font-black text-slate-900 dark:text-slate-100 mt-0.5">
-                {user?.username}
-              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-lg font-black text-slate-900 dark:text-slate-100">
+                  {user?.username}
+                </p>
+                {isAdmin ? (
+                  <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                    <Shield className="h-3 w-3" />
+                    Admin System
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                    <UserCheck className="h-3 w-3" />
+                    Pengguna Reguler
+                  </span>
+                )}
+              </div>
             </div>
             <GlassButton
               size="sm"

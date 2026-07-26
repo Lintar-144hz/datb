@@ -2,7 +2,7 @@ import { User } from '@/types/user';
 import { Transaction } from '@/types/transaction';
 import { Goal } from '@/types/goal';
 import { Category } from '@/types/category';
-import { LocalStorageService } from '@/lib/storage';
+import { LocalStorageService, notifyDbChange } from '@/lib/storage';
 import { userService } from '@/services/userService';
 import { isSupabaseConfigured } from '@/lib/supabase';
 
@@ -81,6 +81,7 @@ export const adminService = {
         const filteredGoals = allGoals.filter((g) => g.user_id !== userId);
         localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(filteredGoals));
       }
+      notifyDbChange();
     }
   },
 
@@ -115,7 +116,7 @@ export const adminService = {
   },
 
   async seedDemoDatabase(): Promise<void> {
-    const demoUsers = ['dev_santoso', 'frontend_pro', 'fullstack_dev', 'admin'];
+    const demoUsers = ['dev_santoso', 'frontend_pro', 'fullstack_dev'];
     for (const name of demoUsers) {
       await userService.loginOrRegister(name);
     }
@@ -155,6 +156,8 @@ export const adminService = {
     sampleGoals.forEach((g) => {
       LocalStorageService.addGoal(uId, g);
     });
+
+    notifyDbChange();
   },
 
   purgeAllDatabase(): void {
@@ -164,6 +167,7 @@ export const adminService = {
       localStorage.removeItem(STORAGE_KEYS.GOALS);
       localStorage.removeItem(STORAGE_KEYS.CATEGORIES);
       localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+      notifyDbChange();
     }
   },
 
@@ -200,10 +204,14 @@ CREATE TABLE IF NOT EXISTS public.goals (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Enable Row Level Security (RLS)
+-- 4. Enable Row Level Security (RLS) & Realtime
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.goals ENABLE ROW LEVEL SECURITY;
+
+-- Enable Realtime publication for tables
+ALTER PUBLICATION supabase_realtime ADD TABLE public.transactions;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.goals;
 
 -- Allow public access for dev mode
 CREATE POLICY "Public full access users" ON public.users FOR ALL USING (true);

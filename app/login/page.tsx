@@ -8,7 +8,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { GlassInput } from '@/components/ui/GlassInput';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { useAuth } from '@/hooks/useAuth';
-import { Wallet, User, ArrowRight, ShieldCheck, Sparkles, KeyRound } from 'lucide-react';
+import { Wallet, User, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -30,10 +30,6 @@ export default function LoginPage() {
     } catch (err: any) {
       setErrorMsg(err.message || 'Gagal masuk');
     }
-  };
-
-  const handleDemoLogin = (demoName: string) => {
-    setUsername(demoName);
   };
 
   return (
@@ -63,7 +59,7 @@ export default function LoginPage() {
             <form onSubmit={handleLogin} className="space-y-4">
               <GlassInput
                 label="Username / Nama Panggilan"
-                placeholder="Contoh: dev_santoso"
+                placeholder="Masukkan username Anda..."
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 icon={<User className="h-4 w-4" />}
@@ -83,30 +79,11 @@ export default function LoginPage() {
               </GlassButton>
             </form>
 
-            {/* Quick Demo Accounts */}
-            <div className="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
-              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 text-center">
-                Atau coba dengan username cepat:
-              </p>
-              <div className="flex flex-wrap justify-center gap-2">
-                {['frontend_pro', 'fullstack_dev', 'lintar_dev'].map((demo) => (
-                  <button
-                    key={demo}
-                    type="button"
-                    onClick={() => handleDemoLogin(demo)}
-                    className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-white/40 dark:bg-slate-800/40 hover:bg-purple-500/20 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 transition-colors"
-                  >
-                    @{demo}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Info Badge */}
             <div className="p-3 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center gap-2.5 text-xs text-slate-600 dark:text-slate-300">
               <ShieldCheck className="h-5 w-5 text-purple-600 dark:text-purple-400 shrink-0" />
               <span>
-                Tanpa password! Jika username belum ada, akun baru akan dibuat otomatis.
+                Tanpa password! Jika username belum ada, akun baru yang bersih akan dibuat otomatis.
               </span>
             </div>
           </GlassCard>

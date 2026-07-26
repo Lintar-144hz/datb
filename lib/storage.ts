@@ -13,6 +13,12 @@ const STORAGE_KEYS = {
   CATEGORIES: 'tabungan_dev_categories',
 };
 
+export const notifyDbChange = () => {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('tabungan_db_update'));
+  }
+};
+
 // Default seed categories for a newly created user
 export const getDefaultCategories = (userId: string): Category[] => [
   { id: generateUUID(), user_id: userId, name: 'Gaji & Pendapatan', icon: 'Wallet', color: '#10B981', type: 'income', created_at: new Date().toISOString() },
@@ -42,6 +48,7 @@ export const LocalStorageService = {
     } else {
       localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
     }
+    notifyDbChange();
   },
 
   getUsers(): User[] {
@@ -67,15 +74,13 @@ export const LocalStorageService = {
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
     }
 
-    // Seed default categories
+    // Seed default categories only
     const categories = this.getCategories(newUser.id);
     if (categories.length === 0) {
       this.saveCategories(newUser.id, getDefaultCategories(newUser.id));
     }
 
-    // Seed initial demo data for instant delight if brand new
-    this.seedDemoDataIfEmpty(newUser.id);
-
+    notifyDbChange();
     return newUser;
   },
 
@@ -101,6 +106,7 @@ export const LocalStorageService = {
     const filtered = allCategories.filter((c) => c.user_id !== userId);
     const updated = [...filtered, ...categories];
     localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(updated));
+    notifyDbChange();
   },
 
   addCategory(userId: string, category: Omit<Category, 'id' | 'user_id' | 'created_at'>): Category {
@@ -133,6 +139,7 @@ export const LocalStorageService = {
     const filtered = all.filter((t) => t.user_id !== userId);
     const updated = [...filtered, ...transactions];
     localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updated));
+    notifyDbChange();
   },
 
   addTransaction(userId: string, data: Omit<Transaction, 'id' | 'user_id' | 'created_at'> & { created_at?: string }): Transaction {
@@ -183,6 +190,7 @@ export const LocalStorageService = {
     const filtered = all.filter((g) => g.user_id !== userId);
     const updated = [...filtered, ...goals];
     localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(updated));
+    notifyDbChange();
   },
 
   addGoal(userId: string, data: GoalFormData): Goal {
@@ -267,45 +275,6 @@ export const LocalStorageService = {
     this.saveTransactions(userId, []);
     this.saveGoals(userId, []);
     this.saveCategories(userId, getDefaultCategories(userId));
+    notifyDbChange();
   },
-
-  // --- DEMO SEED DATA ---
-  seedDemoDataIfEmpty(userId: string): void {
-    const txs = this.getTransactions(userId);
-    if (txs.length > 0) return;
-
-    const now = new Date();
-    const daysAgo = (d: number) => {
-      const date = new Date(now);
-      date.setDate(date.getDate() - d);
-      return date.toISOString();
-    };
-
-    // Seed sample transactions
-    const sampleTxs: Omit<Transaction, 'id' | 'user_id'>[] = [
-      { amount: 8500000, type: 'income', category: 'Gaji & Pendapatan', note: 'Gaji Bulanan Software Engineer', created_at: daysAgo(20) },
-      { amount: 1200000, type: 'income', category: 'Side Hustle / Bisnis', note: 'Project Freelance Web Dev', created_at: daysAgo(12) },
-      { amount: 350000, type: 'expense', category: 'Belanja & Groceries', note: 'Groceries Bulanan Supermarket', created_at: daysAgo(18) },
-      { amount: 120000, type: 'expense', category: 'Makanan & Minuman', note: 'Makan Malam bersama Tim', created_at: daysAgo(15) },
-      { amount: 450000, type: 'expense', category: 'Tagihan & Utilitas', note: 'Wi-Fi & Listrik Rumah', created_at: daysAgo(10) },
-      { amount: 85000, type: 'expense', category: 'Transportasi & Bensin', note: 'Isi BBM Pertamax', created_at: daysAgo(5) },
-      { amount: 250000, type: 'expense', category: 'Hiburan & Hobi', note: 'Langganan Streaming & Game', created_at: daysAgo(2) },
-    ];
-
-    sampleTxs.forEach((tx) => this.addTransaction(userId, tx));
-
-    // Seed sample goals
-    const deadline1 = new Date();
-    deadline1.setMonth(deadline1.getMonth() + 6);
-    const deadline2 = new Date();
-    deadline2.setMonth(deadline2.getMonth() + 3);
-
-    const sampleGoals: Omit<Goal, 'id' | 'user_id' | 'created_at'>[] = [
-      { title: 'Dana Darurat 6 Bulan', target: 20000000, current: 8500000, deadline: deadline1.toISOString().split('T')[0] },
-      { title: 'MacBook Pro M3 Max', target: 35000000, current: 18000000, deadline: deadline2.toISOString().split('T')[0] },
-      { title: 'Liburan ke Jepang 🇯🇵', target: 15000000, current: 6500000, deadline: null },
-    ];
-
-    sampleGoals.forEach((g) => this.addGoal(userId, g));
-  }
 };

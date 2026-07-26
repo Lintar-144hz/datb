@@ -1,10 +1,12 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/useAuthStore';
 import { goalService } from '@/services/goalService';
 import { Goal, GoalFormData, GoalDepositData } from '@/types/goal';
 import confetti from 'canvas-confetti';
+import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 
 export function useGoals() {
   const user = useAuthStore((state) => state.user);
@@ -16,6 +18,41 @@ export function useGoals() {
     queryFn: () => goalService.getGoals(userId),
     enabled: Boolean(userId),
   });
+
+  // Realtime database listener across tabs, local window events, and Supabase Postgres Realtime
+  useEffect(() => {
+    if (!userId) return;
+
+    const handleRealtimeUpdate = () => {
+      queryClient.invalidateQueries({ queryKey: ['goals', userId] });
+      queryClient.invalidateQueries({ queryKey: ['transactions', userId] });
+      queryClient.invalidateQueries({ queryKey: ['stats', userId] });
+    };
+
+    window.addEventListener('storage', handleRealtimeUpdate);
+    window.addEventListener('tabungan_db_update', handleRealtimeUpdate);
+
+    let channel: any = null;
+    if (isSupabaseConfigured && supabase) {
+      const channelId = `goals_${userId}_${Math.random().toString(36).substring(2, 8)}`;
+      channel = supabase
+        .channel(channelId)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'goals', filter: `user_id=eq.${userId}` },
+          handleRealtimeUpdate
+        )
+        .subscribe();
+    }
+
+    return () => {
+      window.removeEventListener('storage', handleRealtimeUpdate);
+      window.removeEventListener('tabungan_db_update', handleRealtimeUpdate);
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [userId, queryClient]);
 
   const triggerConfetti = () => {
     try {

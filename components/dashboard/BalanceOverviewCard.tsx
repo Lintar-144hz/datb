@@ -2,11 +2,9 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, Eye, EyeOff, ArrowUpRight, ArrowDownLeft, Sparkles, Plus } from 'lucide-react';
+import { Wallet, Eye, EyeOff, ArrowUpRight, ArrowDownLeft, Shield, UserCheck } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { GlassButton } from '@/components/ui/GlassButton';
 import { formatCurrency } from '@/lib/utils';
-import { useFinanceStore } from '@/store/useFinanceStore';
 
 interface BalanceOverviewCardProps {
   totalBalance: number;
@@ -22,7 +20,7 @@ export function BalanceOverviewCard({
   username,
 }: BalanceOverviewCardProps) {
   const [showBalance, setShowBalance] = useState(true);
-  const openAddTransactionModal = useFinanceStore((state) => state.openAddTransactionModal);
+  const isAdmin = username.toLowerCase() === 'admin';
 
   return (
     <GlassCard glow className="relative overflow-hidden bg-gradient-to-br from-purple-900/90 via-indigo-900/80 to-slate-900/90 text-white border-purple-500/30">
@@ -41,16 +39,28 @@ export function BalanceOverviewCard({
               <p className="text-xs font-semibold text-purple-200/80 uppercase tracking-wider">
                 Total Saldo Dev
               </p>
-              <h2 className="text-sm font-bold text-white flex items-center gap-1.5">
-                <span>Halo, {username}</span>
-                <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-              </h2>
+              <div className="flex items-center gap-2 mt-0.5">
+                <h2 className="text-sm sm:text-base font-bold text-white">
+                  Halo, {username}
+                </h2>
+                {isAdmin ? (
+                  <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-amber-400/25 text-amber-200 border border-amber-400/40 flex items-center gap-1 shadow-sm">
+                    <Shield className="h-3 w-3 text-amber-300" />
+                    Admin System
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 flex items-center gap-1">
+                    <UserCheck className="h-3 w-3 text-emerald-300" />
+                    Pengguna Reguler
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
           <button
             onClick={() => setShowBalance(!showBalance)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-medium backdrop-blur-md border border-white/15 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-medium backdrop-blur-md border border-white/15 transition-all cursor-pointer"
           >
             {showBalance ? (
               <>
